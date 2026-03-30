@@ -6,7 +6,6 @@ import { EMPRESA_ID } from '@/lib/config'
 import ModalNuevoItemInventario from '@/components/ModalNuevoItemInventario'
 import ModalMovimientoInventario from '@/components/ModalMovimientoInventario'
 import ModalHistorialMovimientos from '@/components/ModalHistorialMovimientos'
-import PermisoGuard from '@/components/PermisoGuard'
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -228,14 +227,12 @@ export default function ListaInventario() {
             {items.length} {items.length === 1 ? 'ítem registrado' : 'ítems registrados'}
           </div>
         </div>
-        <PermisoGuard modulo="inventario" accion="crear">
-          <button
+        <button
             onClick={() => setModalNuevoItem(true)}
             className="ct-btn ct-btn-primary"
           >
             + Nuevo Ítem
           </button>
-        </PermisoGuard>
       </div>
 
       {/* Banner de alertas */}

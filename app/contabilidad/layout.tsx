@@ -1,5 +1,4 @@
 import Sidebar from '@/components/Sidebar'
-import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function LayoutContabilidad({ children }: { children: React.ReactNode }) {
   return (
@@ -31,9 +30,7 @@ export default function LayoutContabilidad({ children }: { children: React.React
           </div>
         </header>
         <main style={{ flex: 1, padding: 24, background: '#f7faff', maxWidth: 1200, width: '100%' }}>
-          <ProtectedRoute modulo="contabilidad">
-            {children}
-          </ProtectedRoute>
+          {children}
         </main>
       </div>
     </div>

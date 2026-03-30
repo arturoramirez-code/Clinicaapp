@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { EMPRESA_ID } from '@/lib/config'
-import PermisoGuard from '@/components/PermisoGuard'
 
 // ── Constantes de layout FDI ────────────────────────────────────────────────
 
@@ -871,8 +870,7 @@ export default function Odontograma({ pacienteId }: { pacienteId: string }) {
       </div>
 
       {/* Botón guardar */}
-      <PermisoGuard modulo="odontograma" accion="editar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 16 }}>
           <button
             onClick={guardar}
             disabled={guardando || dirty.size === 0 || !dentistaId}
@@ -892,7 +890,6 @@ export default function Odontograma({ pacienteId }: { pacienteId: string }) {
             </span>
           )}
         </div>
-      </PermisoGuard>
 
       {/* Panel de historial */}
       <PanelHistorial

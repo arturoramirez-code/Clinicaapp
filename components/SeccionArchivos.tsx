@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { EMPRESA_ID } from '@/lib/config'
-import PermisoGuard from '@/components/PermisoGuard'
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 
@@ -314,15 +313,13 @@ export default function SeccionArchivos({ citaId, pacienteId, notaId }: Props) {
           )}
         </h2>
         {!mostrarPanel && (
-          <PermisoGuard modulo="expediente" accion="subir_archivos">
-            <button
+          <button
               type="button"
               className="ct-btn ct-btn-secondary ct-btn-sm"
               onClick={() => inputRef.current?.click()}
             >
               + Agregar Archivo
             </button>
-          </PermisoGuard>
         )}
         <input
           ref={inputRef}

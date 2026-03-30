@@ -1,5 +1,4 @@
 import Sidebar from '@/components/Sidebar'
-import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function LayoutConfiguracion({
   children,
@@ -39,9 +38,7 @@ export default function LayoutConfiguracion({
         </header>
 
         <main style={{ flex: 1, padding: 24, background: '#f7faff' }}>
-          <ProtectedRoute modulo="configuracion">
-            {children}
-          </ProtectedRoute>
+          {children}
         </main>
       </div>
     </div>

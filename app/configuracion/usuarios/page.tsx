@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { EMPRESA_ID } from '@/lib/config'
-import { useLimitesSuscripcion } from '@/hooks/useLimitesSuscripcion'
-import PermisoGuard from '@/components/PermisoGuard'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -55,13 +53,6 @@ export default function PaginaUsuarios() {
   const [guardando, setGuardando]       = useState(false)
   const [exito, setExito]               = useState<string | null>(null)
   const [error, setError]               = useState<string | null>(null)
-
-  const {
-    usuariosActuales,
-    maxUsuarios,
-    puedeAgregarUsuario,
-    loading: loadingLimites,
-  } = useLimitesSuscripcion()
 
   useEffect(() => {
     supabase
@@ -116,11 +107,6 @@ export default function PaginaUsuarios() {
     if (!err) setUsuarios((prev) => prev.map((x) => x.id === u.id ? { ...x, activo: !x.activo } : x))
   }
 
-  // ── Lógica de límite ───────────────────────────────────────────────────────
-
-  const enLimite           = !puedeAgregarUsuario()
-  const botonDeshabilitado = enLimite
-
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
@@ -138,33 +124,14 @@ export default function PaginaUsuarios() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#0d3d6e', margin: 0 }}>Usuarios y Roles</h1>
-          {!loadingLimites && (
-            <p style={{ fontSize: 14, color: '#5a8ab0', marginTop: 6 }}>
-              {usuariosActuales} de {maxUsuarios} usuarios activos
-            </p>
-          )}
         </div>
 
-        <PermisoGuard modulo="configuracion" accion="ver">
-          <div style={{ textAlign: 'right' }}>
-            <button
-              onClick={() => { setMostrarForm(true); setError(null); setExito(null) }}
-              disabled={botonDeshabilitado}
-              className="ct-btn ct-btn-primary"
-              style={{ opacity: botonDeshabilitado ? 0.5 : 1, cursor: botonDeshabilitado ? 'not-allowed' : 'pointer' }}
-            >
-              + Nuevo usuario
-            </button>
-            {botonDeshabilitado && (
-              <p style={{ fontSize: 12, color: '#5a8ab0', marginTop: 6 }}>
-                Límite de {maxUsuarios} usuarios alcanzado.{' '}
-                <Link href="/configuracion" style={{ color: '#1a6bbd', textDecoration: 'none' }}>
-                  Actualizá tu plan
-                </Link>
-              </p>
-            )}
-          </div>
-        </PermisoGuard>
+        <button
+          onClick={() => { setMostrarForm(true); setError(null); setExito(null) }}
+          className="ct-btn ct-btn-primary"
+        >
+          + Nuevo usuario
+        </button>
       </div>
 
       {/* Mensajes */}

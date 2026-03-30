@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { EMPRESA_ID } from '@/lib/config'
-import { useLimitesSuscripcion } from '@/hooks/useLimitesSuscripcion'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -75,9 +74,6 @@ export default function PaginaNuevoMedico() {
   const [guardando, setGuardando]   = useState(false)
   const [errorGeneral, setErrorGeneral] = useState<string | null>(null)
   const [sucursales, setSucursales] = useState<Sucursal[]>([])
-
-  const { puedeAgregarUsuario, maxUsuarios, loading: loadingLimites } = useLimitesSuscripcion()
-  const limiteAlcanzado = !loadingLimites && !puedeAgregarUsuario()
 
   // Foto
   const [fotoPreview, setFotoPreview]   = useState<string | null>(null)
@@ -240,19 +236,6 @@ export default function PaginaNuevoMedico() {
 
       {/* Formulario */}
       <div className="ct-card" style={{ maxWidth: 700 }}>
-        {limiteAlcanzado && (
-          <div style={{
-            background: '#fff8e8', border: '0.5px solid #f0c040', borderRadius: 8,
-            padding: '10px 14px', color: '#7a5500', fontSize: 13, marginBottom: 20,
-          }}>
-            ⚠ Se alcanzó el límite de {maxUsuarios} usuarios activos en tu plan.{' '}
-            <Link href="/configuracion" style={{ color: '#1a6bbd', textDecoration: 'none', fontWeight: 500 }}>
-              Actualizá tu plan
-            </Link>{' '}
-            para agregar más usuarios.
-          </div>
-        )}
-
         {errorGeneral && (
           <div style={{
             background: '#fff0f0', border: '0.5px solid #e84040', borderRadius: 8,
@@ -446,8 +429,8 @@ export default function PaginaNuevoMedico() {
             <button
               type="submit"
               className="ct-btn ct-btn-primary"
-              disabled={guardando || limiteAlcanzado}
-              style={{ opacity: guardando || limiteAlcanzado ? 0.5 : 1, cursor: limiteAlcanzado ? 'not-allowed' : 'pointer' }}
+              disabled={guardando}
+              style={{ opacity: guardando ? 0.5 : 1 }}
             >
               {guardando ? 'Guardando...' : 'Registrar Médico'}
             </button>

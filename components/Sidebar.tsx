@@ -2,32 +2,27 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import PermisoGuard from '@/components/PermisoGuard'
-import { usePermisosContext } from '@/context/PermisosContext'
 
 interface ItemNav {
   href: string
   etiqueta: string
   icono: string
-  modulo: string | null  // null = siempre visible (inicio/dashboard)
 }
 
 const itemsNav: ItemNav[] = [
-  { href: '/inicio',       icono: '⊞', etiqueta: 'Inicio',        modulo: null           },
-  { href: '/pacientes',    icono: '👤', etiqueta: 'Pacientes',     modulo: 'pacientes'    },
-  { href: '/medicos',      icono: '🩺', etiqueta: 'Médicos',       modulo: 'medicos'      },
-  { href: '/citas',        icono: '📅', etiqueta: 'Citas',         modulo: 'agenda'       },
-  { href: '/expedientes',  icono: '📋', etiqueta: 'Expedientes',   modulo: 'expediente'   },
-  { href: '/cobros',       icono: '💳', etiqueta: 'Cobros',        modulo: 'cobros'       },
-  { href: '/contabilidad', icono: '🧮', etiqueta: 'Contabilidad',  modulo: 'contabilidad' },
-  { href: '/inventario',   icono: '📦', etiqueta: 'Inventario',    modulo: 'inventario'   },
-  { href: '/configuracion',icono: '⚙',  etiqueta: 'Configuración', modulo: 'configuracion'},
+  { href: '/inicio',       icono: '⊞', etiqueta: 'Inicio'        },
+  { href: '/pacientes',    icono: '👤', etiqueta: 'Pacientes'     },
+  { href: '/medicos',      icono: '🩺', etiqueta: 'Médicos'       },
+  { href: '/citas',        icono: '📅', etiqueta: 'Citas'         },
+  { href: '/expedientes',  icono: '📋', etiqueta: 'Expedientes'   },
+  { href: '/cobros',       icono: '💳', etiqueta: 'Cobros'        },
+  { href: '/contabilidad', icono: '🧮', etiqueta: 'Contabilidad'  },
+  { href: '/inventario',   icono: '📦', etiqueta: 'Inventario'    },
+  { href: '/configuracion',icono: '⚙',  etiqueta: 'Configuración' },
 ]
 
 export default function Sidebar() {
-  const pathname  = usePathname()
-  const { rol }   = usePermisosContext()
-  const esAdmin   = rol === 'admin'
+  const pathname = usePathname()
 
   return (
     <aside className="ct-sidebar flex flex-col">
@@ -63,7 +58,7 @@ export default function Sidebar() {
           ) || (
             item.href === '/configuracion' && pathname.startsWith('/configuracion') && !pathname.startsWith('/configuracion/')
           )
-          const enlace = (
+          return (
             <Link
               key={item.href}
               href={item.href}
@@ -73,15 +68,9 @@ export default function Sidebar() {
               <span>{item.etiqueta}</span>
             </Link>
           )
-          if (item.modulo === null) return enlace
-          return (
-            <PermisoGuard key={item.href} modulo={item.modulo} accion="ver">
-              {enlace}
-            </PermisoGuard>
-          )
         })}
 
-        {/* Sub-ítems de Configuración — solo visibles cuando se está en /configuracion */}
+        {/* Sub-ítems de Configuración */}
         {pathname.startsWith('/configuracion') && (
           <>
             <Link
@@ -100,16 +89,6 @@ export default function Sidebar() {
               <span style={{ fontSize: 13, width: 20, textAlign: 'center' }}>👥</span>
               <span>Usuarios y Roles</span>
             </Link>
-            {esAdmin && (
-              <Link
-                href="/configuracion/permisos"
-                className={`ct-sidebar-item${pathname.startsWith('/configuracion/permisos') ? ' activo' : ''}`}
-                style={{ paddingLeft: 44, fontSize: 13 }}
-              >
-                <span style={{ fontSize: 13, width: 20, textAlign: 'center' }}>🔑</span>
-                <span>Permisos</span>
-              </Link>
-            )}
           </>
         )}
       </nav>

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { EMPRESA_ID } from '@/lib/config'
-import { usePermisosContext } from '@/context/PermisosContext'
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -97,7 +96,6 @@ export default function PanelDetalleCita({
   onUpdate: (citaActualizada: CitaDetalle) => void
 }) {
   const router = useRouter()
-  const { puede } = usePermisosContext()
   const [actualizando, setActualizando] = useState<string | null>(null)
   const [errorAccion, setErrorAccion]   = useState<string | null>(null)
 
@@ -226,13 +224,11 @@ export default function PanelDetalleCita({
 
   if (cita.estado === 'agendada') {
     acciones.push({ label: 'Confirmar', estado: 'confirmada', estilo: 'ct-btn-primary' })
-    if (puede('agenda', 'cancelar'))
-      acciones.push({ label: 'Cancelar cita', estado: 'cancelada', estilo: 'ct-btn-danger' })
+    acciones.push({ label: 'Cancelar cita', estado: 'cancelada', estilo: 'ct-btn-danger' })
   }
   if (cita.estado === 'confirmada') {
     acciones.push({ label: 'Iniciar', estado: 'en_curso', estilo: 'ct-btn-primary' })
-    if (puede('agenda', 'cancelar'))
-      acciones.push({ label: 'Cancelar cita', estado: 'cancelada', estilo: 'ct-btn-danger' })
+    acciones.push({ label: 'Cancelar cita', estado: 'cancelada', estilo: 'ct-btn-danger' })
   }
   if (cita.estado === 'en_curso') {
     acciones.push({ label: 'Completar', estado: 'completada', estilo: 'ct-btn-primary' })

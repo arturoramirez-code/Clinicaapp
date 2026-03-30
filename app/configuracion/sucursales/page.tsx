@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { EMPRESA_ID } from '@/lib/config'
-import { useLimitesSuscripcion } from '@/hooks/useLimitesSuscripcion'
-import PermisoGuard from '@/components/PermisoGuard'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -52,13 +50,6 @@ export default function PaginaSucursales() {
   const [error, setError]           = useState<string | null>(null)
   const [nuevo, setNuevo]           = useState(false)
 
-  const {
-    plan,
-    sucursalesActuales,
-    maxSucursales,
-    puedeAgregarSucursal,
-    loading: loadingLimites,
-  } = useLimitesSuscripcion()
 
   useEffect(() => {
     supabase
@@ -134,10 +125,6 @@ export default function PaginaSucursales() {
 
   // ── Lógica de límite ───────────────────────────────────────────────────────
 
-  const esPlanEstandar     = plan === 'estandar'
-  const enLimite           = !puedeAgregarSucursal()
-  const mostrarBotonNueva  = !loadingLimites && !esPlanEstandar
-  const botonDeshabilitado = enLimite
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -156,51 +143,14 @@ export default function PaginaSucursales() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#0d3d6e', margin: 0 }}>Sucursales</h1>
-          {!loadingLimites && (
-            <p style={{ fontSize: 14, color: '#5a8ab0', marginTop: 6 }}>
-              {esPlanEstandar
-                ? 'Tu plan estándar incluye 1 sucursal.'
-                : `${sucursalesActuales} de ${maxSucursales} sucursales utilizadas`}
-            </p>
-          )}
         </div>
 
-        {/* Botón Nueva sucursal — oculto en plan estándar */}
-        {mostrarBotonNueva && (
-          <PermisoGuard modulo="configuracion" accion="ver">
-            <div>
-              <button
-                onClick={abrirNueva}
-                disabled={botonDeshabilitado}
-                className="ct-btn ct-btn-primary"
-                style={{ opacity: botonDeshabilitado ? 0.5 : 1, cursor: botonDeshabilitado ? 'not-allowed' : 'pointer' }}
-              >
-                + Nueva sucursal
-              </button>
-              {botonDeshabilitado && (
-                <p style={{ fontSize: 12, color: '#5a8ab0', marginTop: 6, textAlign: 'right' }}>
-                  Límite de {maxSucursales} sucursales alcanzado.{' '}
-                  <Link href="/configuracion" style={{ color: '#1a6bbd', textDecoration: 'none' }}>
-                    Actualizá tu plan
-                  </Link>
-                </p>
-              )}
-            </div>
-          </PermisoGuard>
-        )}
-
-        {/* Aviso plan estándar */}
-        {!loadingLimites && esPlanEstandar && (
-          <div style={{
-            background: '#fff8e8', border: '0.5px solid #f0c040', borderRadius: 8,
-            padding: '8px 14px', fontSize: 13, color: '#7a5500',
-          }}>
-            ⚠ Plan Estándar · Solo 1 sucursal.{' '}
-            <Link href="/configuracion" style={{ color: '#1a6bbd', textDecoration: 'none', fontWeight: 500 }}>
-              Actualizá tu plan
-            </Link>
-          </div>
-        )}
+        <button
+          onClick={abrirNueva}
+          className="ct-btn ct-btn-primary"
+        >
+          + Nueva sucursal
+        </button>
       </div>
 
       {/* Mensajes */}
