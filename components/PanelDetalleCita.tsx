@@ -4,6 +4,12 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { EMPRESA_ID } from '@/lib/config'
+import WhatsAppButton from '@/components/WhatsAppButton'
+import {
+  mensajeConfirmacion,
+  mensajeRecordatorio,
+  mensajeCancelacion,
+} from '@/lib/whatsapp'
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -54,6 +60,13 @@ function formatearHora(iso: string): string {
   return new Date(iso).toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit', hour12: true })
 }
 
+function formatearFechaCorta(iso: string): string {
+  return new Date(iso).toLocaleDateString('es-GT', {
+    timeZone: 'America/Guatemala',
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  })
+}
+
 const CONFIG_ESTADO: Record<string, { etiqueta: string; bg: string; color: string }> = {
   agendada:    { etiqueta: 'Agendada',    bg: '#fff8e8', color: '#7a5500' },
   confirmada:  { etiqueta: 'Confirmada',  bg: '#e8f4ff', color: '#0d3d6e' },
@@ -96,8 +109,20 @@ export default function PanelDetalleCita({
   onUpdate: (citaActualizada: CitaDetalle) => void
 }) {
   const router = useRouter()
-  const [actualizando, setActualizando] = useState<string | null>(null)
-  const [errorAccion, setErrorAccion]   = useState<string | null>(null)
+  const [actualizando, setActualizando]   = useState<string | null>(null)
+  const [errorAccion, setErrorAccion]     = useState<string | null>(null)
+  const [whatsappActivo, setWhatsappActivo] = useState(false)
+
+  useEffect(() => {
+    supabase
+      .from('notificacion_config')
+      .select('whatsapp_activo')
+      .eq('empresa_id', EMPRESA_ID)
+      .single()
+      .then(({ data }) => {
+        if (data) setWhatsappActivo(data.whatsapp_activo ?? false)
+      })
+  }, [])
 
   // ── Cobro existente ─────────────────────────────────────────────────
   // undefined = no verificado aún, null = verificado sin cobro, objeto = cobro encontrado
@@ -338,6 +363,57 @@ export default function PanelDetalleCita({
                 border: '0.5px solid #e0eef8',
               }}>
                 {cita.notas_previas}
+              </div>
+            </div>
+          )}
+
+          {/* ── WhatsApp ── */}
+          {whatsappActivo && (
+            <div style={{
+              paddingTop: 14, borderTop: '0.5px solid #e0eef8', marginTop: 4, marginBottom: 4,
+            }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: '#5a8ab0', marginBottom: 8 }}>
+                WhatsApp
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <WhatsAppButton
+                  telefono={cita.paciente?.telefono ?? null}
+                  label="Confirmar cita"
+                  mensaje={mensajeConfirmacion({
+                    paciente: nombreCompleto(cita.paciente),
+                    clinica:  'la clínica',
+                    fecha:    formatearFechaCorta(cita.fecha_hora),
+                    hora:     formatearHora(cita.fecha_hora),
+                    dentista: cita.dentista
+                      ? `${cita.dentista.nombre} ${cita.dentista.apellido ?? ''}`.trim()
+                      : '',
+                  })}
+                />
+                <WhatsAppButton
+                  telefono={cita.paciente?.telefono ?? null}
+                  label="Recordar cita"
+                  mensaje={mensajeRecordatorio({
+                    paciente: nombreCompleto(cita.paciente),
+                    clinica:  'la clínica',
+                    fecha:    formatearFechaCorta(cita.fecha_hora),
+                    hora:     formatearHora(cita.fecha_hora),
+                    dentista: cita.dentista
+                      ? `${cita.dentista.nombre} ${cita.dentista.apellido ?? ''}`.trim()
+                      : '',
+                  })}
+                />
+                {cita.estado === 'cancelada' && (
+                  <WhatsAppButton
+                    telefono={cita.paciente?.telefono ?? null}
+                    label="Avisar cancelación"
+                    mensaje={mensajeCancelacion({
+                      paciente: nombreCompleto(cita.paciente),
+                      clinica:  'la clínica',
+                      fecha:    formatearFechaCorta(cita.fecha_hora),
+                      hora:     formatearHora(cita.fecha_hora),
+                    })}
+                  />
+                )}
               </div>
             </div>
           )}

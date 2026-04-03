@@ -18,6 +18,7 @@ interface ConfigNotificaciones {
   enviar_reprogramacion: boolean
   horas_recordatorio_1: number
   horas_recordatorio_2: number
+  whatsapp_activo: boolean
 }
 
 interface ResultadoRecordatorios {
@@ -40,6 +41,7 @@ const CONFIG_DEFAULT: ConfigNotificaciones = {
   enviar_reprogramacion: true,
   horas_recordatorio_1: 24,
   horas_recordatorio_2: 2,
+  whatsapp_activo: false,
 }
 
 // ── Sub-componentes ────────────────────────────────────────────────────────
@@ -135,6 +137,7 @@ export default function PaginaConfiguracionNotificaciones() {
             enviar_reprogramacion:  true,
             horas_recordatorio_1:   24,
             horas_recordatorio_2:   2,
+            whatsapp_activo:        false,
           })
           .select('*')
           .single()
@@ -181,6 +184,7 @@ export default function PaginaConfiguracionNotificaciones() {
           enviar_reprogramacion:  config.enviar_reprogramacion,
           horas_recordatorio_1:   config.horas_recordatorio_1,
           horas_recordatorio_2:   config.horas_recordatorio_2,
+          whatsapp_activo:        config.whatsapp_activo,
           actualizado_en:         new Date().toISOString(),
         },
         { onConflict: 'empresa_id' }
@@ -323,6 +327,38 @@ export default function PaginaConfiguracionNotificaciones() {
               {config.email_activo
                 ? 'Los correos se enviarán automáticamente al paciente.'
                 : 'No se enviará ningún correo mientras esté desactivado.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Toggle whatsapp_activo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={config.whatsapp_activo}
+            onClick={() => cambiar('whatsapp_activo', !config.whatsapp_activo)}
+            style={{
+              width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer',
+              background: config.whatsapp_activo ? '#25D366' : '#c5ddf5',
+              position: 'relative', transition: 'background 0.2s', flexShrink: 0,
+            }}
+          >
+            <span style={{
+              position: 'absolute', top: 3,
+              left: config.whatsapp_activo ? 23 : 3,
+              width: 18, height: 18, borderRadius: '50%', background: '#ffffff',
+              transition: 'left 0.2s',
+            }} />
+          </button>
+          <div>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0d3d6e' }}>
+              Activar botones de WhatsApp
+            </p>
+            <p style={{ margin: '2px 0 0', fontSize: 12, color: '#5a8ab0' }}>
+              {config.whatsapp_activo
+                ? 'Los botones de WhatsApp aparecerán en el detalle de cada cita.'
+                : 'Los botones de WhatsApp estarán ocultos en el sistema.'}
             </p>
           </div>
         </div>
