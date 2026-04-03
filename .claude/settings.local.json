@@ -11,7 +11,10 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "Bash(node:*)",
+      "Bash(curl -s -X POST http://localhost:3000/api/notificaciones/enviar -H \"Content-Type: application/json\" -d '{\"cita_id\":\"1fddb8cb-cd9c-4db5-9666-f64de541c90f\",\"tipo\":\"cancelacion\"}')",
+      "Bash(python -m json.tool)"
     ]
   },
   "enableAllProjectMcpServers": true,

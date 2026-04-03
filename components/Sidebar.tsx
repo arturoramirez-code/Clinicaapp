@@ -90,6 +90,14 @@ export default function Sidebar() {
               <span style={{ fontSize: 13, width: 20, textAlign: 'center' }}>👥</span>
               <span>Usuarios y Roles</span>
             </Link>
+            <Link
+              href="/configuracion/notificaciones"
+              className={`ct-sidebar-item${pathname.startsWith('/configuracion/notificaciones') ? ' activo' : ''}`}
+              style={{ paddingLeft: 44, fontSize: 13 }}
+            >
+              <span style={{ fontSize: 13, width: 20, textAlign: 'center' }}>🔔</span>
+              <span>Notificaciones</span>
+            </Link>
           </>
         )}
       </nav>

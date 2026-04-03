@@ -210,6 +210,15 @@ export default function PanelDetalleCita({
 
       if (error) throw error
       onUpdate(data as unknown as CitaDetalle)
+
+      // Notificación fire-and-forget para cancelación
+      if (nuevoEstado === 'cancelada') {
+        fetch('/api/notificaciones/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cita_id: cita.id, tipo: 'cancelacion' }),
+        }).catch(() => {})
+      }
     } catch (err) {
       console.error('Error al actualizar estado de cita:', err)
       setErrorAccion('Ocurrió un error al actualizar. Por favor intente de nuevo.')

@@ -72,10 +72,12 @@ export default function ModalNuevaCita({
   onClose,
   onSuccess,
   pacientePrefijado,
+  citaOrigenId,
 }: {
   onClose: () => void
   onSuccess: () => void
   pacientePrefijado?: { id: string; nombre: string }
+  citaOrigenId?: string
 }) {
   const [dentistas, setDentistas]           = useState<Dentista[]>([])
   const [tratamientos, setTratamientos]     = useState<Tratamiento[]>([])
@@ -235,7 +237,7 @@ export default function ModalNuevaCita({
       }
 
       // Insertar cita
-      const { error } = await supabase.from('citas').insert([{
+      const { data: nuevaCita, error } = await supabase.from('citas').insert([{
         empresa_id:      EMPRESA_ID,
         sucursal_id:     sucursalId,
         paciente_id:     pacienteSeleccionado.id,
@@ -247,9 +249,19 @@ export default function ModalNuevaCita({
         notas_previas:   datos.notas_previas.trim() || null,
         estado:          'agendada',
         origen:          'sistema',
-      }])
+        cita_origen_id:  citaOrigenId || null,
+      }]).select('id').single()
 
       if (error) throw error
+
+      // Notificación fire-and-forget (no bloquea la UI)
+      const tipoNotif = citaOrigenId ? 'reprogramacion' : 'confirmacion'
+      fetch('/api/notificaciones/enviar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cita_id: nuevaCita.id, tipo: tipoNotif }),
+      }).catch(() => {})
+
       onSuccess()
     } catch (err) {
       console.error('Error al agendar cita:', err)
