@@ -403,6 +403,7 @@ export default function LandingPage() {
             src="/MedicoClinicaApp.png"
             alt="Médico usando ClinicaApp"
             fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover opacity-80"
             priority
           />
