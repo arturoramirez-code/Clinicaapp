@@ -130,58 +130,96 @@ function FeatureCard({ icon, iconBg, title, description, badge, secondBadge, dis
 
 // ─── Plan Card ───────────────────────────────────────────────────────────────
 
-interface PlanCardProps {
-  name: string
-  subtitle: string
-  highlighted?: boolean
-  badge?: string
-  features: string[]
-  disabled?: string[]
-  ctaLabel: string
-  ctaHref: string
-  ctaVariant: 'outline' | 'green' | 'dark'
+interface FeaturePlan {
+  text: string
+  ia?: boolean
 }
 
-function PlanCard({ name, subtitle, highlighted, badge, features, disabled, ctaLabel, ctaHref, ctaVariant }: PlanCardProps) {
+interface PlanCardProps {
+  name: string
+  priceQTZ: string
+  priceUSD?: string
+  priceNegotiated?: boolean
+  highlighted?: boolean
+  badge?: string
+  features: FeaturePlan[]
+  disabled?: string[]
+  extraNote?: string
+  ctaLabel: string
+  ctaHref: string
+  ctaVariant: 'outline-green' | 'filled-green' | 'outline-neutral'
+}
+
+function PlanCard({
+  name,
+  priceQTZ,
+  priceUSD,
+  priceNegotiated,
+  highlighted,
+  badge,
+  features,
+  disabled,
+  extraNote,
+  ctaLabel,
+  ctaHref,
+  ctaVariant,
+}: PlanCardProps) {
   const borderClass = highlighted
-    ? 'border-2 border-[#0A6E5A] shadow-lg shadow-[#0A6E5A]/10'
+    ? 'border-2 border-[#2ecc8a]'
     : 'border border-gray-200'
 
   const ctaClass =
-    ctaVariant === 'green'
-      ? 'w-full py-3 rounded-xl bg-[#0A6E5A] text-white font-semibold text-[15px] hover:bg-[#085c4a] transition-colors'
-      : ctaVariant === 'outline'
-      ? 'w-full py-3 rounded-xl border-2 border-[#0A6E5A] text-[#0A6E5A] font-semibold text-[15px] hover:bg-[#0A6E5A]/5 transition-colors'
-      : 'w-full py-3 rounded-xl bg-gray-900 text-white font-semibold text-[15px] hover:bg-gray-800 transition-colors'
+    ctaVariant === 'filled-green'
+      ? 'w-full py-2.5 rounded-lg bg-[#2ecc8a] text-white font-semibold text-[14px] hover:bg-[#25b578] transition-colors text-center block'
+      : ctaVariant === 'outline-green'
+      ? 'w-full py-2.5 rounded-lg border border-[#2ecc8a] text-[#0a7a50] font-semibold text-[14px] hover:bg-[#2ecc8a]/5 transition-colors text-center block'
+      : 'w-full py-2.5 rounded-lg border border-gray-300 text-gray-700 font-semibold text-[14px] hover:bg-gray-50 transition-colors text-center block'
 
   return (
-    <div className={`relative bg-white rounded-2xl p-8 flex flex-col ${borderClass}`}>
+    <div className={`relative bg-white rounded-xl p-6 flex flex-col ${borderClass}`}>
       {badge && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#0A6E5A] text-white text-[12px] font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#2ecc8a] text-white text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap">
           {badge}
         </span>
       )}
-      <div className="mb-6">
-        <h3 className="font-bold text-xl text-gray-900 mb-1">{name}</h3>
-        <p className="text-gray-500 text-[13.5px]">{subtitle}</p>
+      <div className="mb-4">
+        <h3 className="font-bold text-lg text-[#0d3d6e] mb-3">{name}</h3>
+        {priceNegotiated ? (
+          <p className="text-[18px] font-medium text-[#5a8ab0]">{priceQTZ}</p>
+        ) : (
+          <>
+            <p className="text-[28px] font-semibold text-[#2ecc8a] leading-tight">{priceQTZ}</p>
+            {priceUSD && <p className="text-[13px] text-[#5a8ab0] mt-0.5">{priceUSD}</p>}
+          </>
+        )}
       </div>
-      <ul className="space-y-3 mb-8 flex-1">
+      <ul className="space-y-2.5 mb-4 flex-1">
         {features.map((f) => (
-          <li key={f} className="flex items-start gap-2.5">
-            <IconCheck className="w-4 h-4 text-[#0A6E5A] mt-0.5 shrink-0" />
-            <span className="text-gray-700 text-[13.5px]">{f}</span>
+          <li key={f.text} className="flex items-start gap-2">
+            <IconCheck className="w-3.5 h-3.5 text-[#2ecc8a] mt-0.5 shrink-0" />
+            <span className="text-[13.5px] text-gray-700">
+              {f.text}
+              {f.ia && (
+                <span className="ml-1.5 inline-flex items-center text-[10px] font-semibold bg-[#2ecc8a]/15 text-[#0a7a50] border border-[#2ecc8a]/30 rounded-full px-1.5 py-0.5 align-middle">
+                  IA
+                </span>
+              )}
+            </span>
           </li>
         ))}
         {disabled?.map((f) => (
-          <li key={f} className="flex items-start gap-2.5 opacity-40">
-            <IconX className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
-            <span className="text-gray-400 text-[13.5px] line-through">{f}</span>
+          <li key={f} className="flex items-start gap-2 opacity-40">
+            <IconX className="w-3.5 h-3.5 text-gray-400 mt-0.5 shrink-0" />
+            <span className="text-[13.5px] text-gray-400">{f}</span>
           </li>
         ))}
       </ul>
-      <Link href={ctaHref} className={ctaClass + ' text-center'}>
+      {extraNote && (
+        <p className="text-[12px] text-[#5a8ab0] mb-2">{extraNote}</p>
+      )}
+      <a href={ctaHref} className={ctaClass}>
         {ctaLabel}
-      </Link>
+      </a>
     </div>
   )
 }
@@ -189,7 +227,7 @@ function PlanCard({ name, subtitle, highlighted, badge, features, disabled, ctaL
 // ─── Contact Form ────────────────────────────────────────────────────────────
 
 function ContactForm() {
-  const [form, setForm] = useState({ nombre: '', clinica: '', email: '', plan: '', mensaje: '' })
+  const [form, setForm] = useState({ nombre: '', clinica: '', pais: '', email: '', plan: '', mensaje: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -203,7 +241,7 @@ function ContactForm() {
       })
       if (!res.ok) throw new Error('Error')
       setStatus('success')
-      setForm({ nombre: '', clinica: '', email: '', plan: '', mensaje: '' })
+      setForm({ nombre: '', clinica: '', pais: '', email: '', plan: '', mensaje: '' })
     } catch {
       setStatus('error')
     }
@@ -249,6 +287,16 @@ function ContactForm() {
             />
           </div>
           <div>
+            <label className={labelClass}>País</label>
+            <input
+              type="text"
+              className={inputClass}
+              placeholder="Guatemala"
+              value={form.pais}
+              onChange={(e) => setForm({ ...form, pais: e.target.value })}
+            />
+          </div>
+          <div>
             <label className={labelClass}>
               Email <span className="text-red-500">*</span>
             </label>
@@ -272,6 +320,7 @@ function ContactForm() {
               onChange={(e) => setForm({ ...form, plan: e.target.value })}
             >
               <option value="">Seleccione un plan</option>
+              <option value="Starter">Starter</option>
               <option value="Estándar">Estándar</option>
               <option value="Pro">Pro</option>
               <option value="Enterprise">Enterprise</option>
@@ -557,67 +606,110 @@ export default function LandingPage() {
       {/* ── Plans ──────────────────────────────────────────────────────────── */}
       <section id="planes" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10">
             <p className="text-[#0A6E5A] font-semibold text-[13px] uppercase tracking-widest mb-3">Planes</p>
-            <h2 className="font-bold text-3xl text-gray-900">Elige el plan para su clínica</h2>
-            <p className="text-gray-500 mt-3 text-[15px]">30 días gratis en todos los planes. Sin tarjeta de crédito.</p>
+            <h2 className="font-bold text-3xl text-gray-900 mb-5">Elige el plan para tu clínica</h2>
+            <a
+              href="#contacto"
+              className="inline-flex items-center h-11 px-6 rounded-lg bg-[#2ecc8a] text-white text-[15px] font-semibold hover:bg-[#25b578] transition-colors mb-4"
+            >
+              Solicitar prueba gratis
+            </a>
+            <div className="flex items-center justify-center gap-2 text-[13px] text-[#5a8ab0]">
+              <span>30 días</span>
+              <span>·</span>
+              <span>Sin compromiso</span>
+              <span>·</span>
+              <span>Sin tarjeta de crédito</span>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+            <PlanCard
+              name="Starter"
+              priceQTZ="Q99/mes"
+              priceUSD="US$12.50/mes"
+              features={[
+                { text: '1 sucursal' },
+                { text: '2 usuarios incluidos' },
+                { text: 'Agenda y citas' },
+                { text: 'Expediente clínico' },
+                { text: 'Facturación FEL*' },
+              ]}
+              disabled={[
+                'Odontograma interactivo',
+                'Sugerencias IA',
+                'Inventario',
+                'Multi-sucursal',
+              ]}
+              extraNote="Costo adicional por usuario extra"
+              ctaLabel="Contactar ventas"
+              ctaHref="mailto:contacto@cliniaapp.com?subject=Solicitud%20Plan%20Starter%20—%20ClinicaApp&body=Hola%2C%20me%20interesa%20el%20Plan%20Starter.%0A%0ANombre%3A%20%0AClínica%3A%20%0ATeléfono%3A%20"
+              ctaVariant="outline-green"
+            />
             <PlanCard
               name="Estándar"
-              subtitle="Para clínicas con 1 sede"
+              priceQTZ="Q199/mes"
+              priceUSD="US$25/mes"
               features={[
-                '1 sucursal',
-                'Hasta 5 usuarios',
-                'Agenda y expediente clínico',
-                'Odontograma interactivo',
-                'Facturación electrónica',
-                'Sugerencias IA de tratamiento',
+                { text: '1 sucursal' },
+                { text: '5 usuarios incluidos' },
+                { text: 'Agenda y citas' },
+                { text: 'Expediente clínico' },
+                { text: 'Odontograma interactivo' },
+                { text: 'Facturación FEL*' },
+                { text: 'Sugerencias IA de tratamiento', ia: true },
               ]}
               disabled={[
                 'Inventario',
                 'Multi-sucursal',
-                'Notas IA + resúmenes Pro',
+                'Chatbot IA',
               ]}
-              ctaLabel="Iniciar prueba gratis"
-              ctaHref="/login"
-              ctaVariant="outline"
+              ctaLabel="Contactar ventas"
+              ctaHref="mailto:contacto@cliniaapp.com?subject=Consulta%20Plan%20Estándar%20—%20ClinicaApp&body=Hola%2C%20me%20interesa%20el%20Plan%20Est%C3%A1ndar.%0A%0ANombre%3A%20%0AClínica%3A%20%0ATeléfono%3A%20"
+              ctaVariant="outline-green"
             />
             <PlanCard
               name="Pro"
-              subtitle="Para clínicas con varias sedes"
+              priceQTZ="Q399/mes"
+              priceUSD="US$50/mes"
               highlighted
               badge="Más popular"
               features={[
-                'Hasta 3 sucursales',
-                '5 usuarios por sucursal',
-                'Todo el plan Estándar',
-                'Inventario incluido',
-                'Reportería avanzada',
-                '✨ Asistente IA Pro: notas asistidas + resúmenes automáticos',
-                'Soporte prioritario',
+                { text: 'Hasta 3 sucursales' },
+                { text: '5 usuarios por sucursal' },
+                { text: 'Todo el plan Estándar' },
+                { text: 'Inventario incluido' },
+                { text: 'Reportería avanzada' },
+                { text: 'Chatbot de agendamiento', ia: true },
+                { text: 'Notas asistidas + resúmenes', ia: true },
+                { text: 'Soporte prioritario' },
               ]}
-              ctaLabel="Iniciar prueba gratis"
-              ctaHref="/login"
-              ctaVariant="green"
+              ctaLabel="Contactar ventas"
+              ctaHref="mailto:contacto@cliniaapp.com?subject=Consulta%20Plan%20Pro%20—%20ClinicaApp&body=Hola%2C%20me%20interesa%20el%20Plan%20Pro.%0A%0ANombre%3A%20%0AClínica%3A%20%0ATeléfono%3A%20"
+              ctaVariant="filled-green"
             />
             <PlanCard
               name="Enterprise"
-              subtitle="Para grupos clínicos grandes"
+              priceQTZ="Precio negociado"
+              priceNegotiated
               features={[
-                'Sucursales ilimitadas',
-                'Usuarios negociados',
-                'Todo el plan Pro',
-                'Reportería empresarial',
-                'Integración con sistemas existentes',
-                'SLA con tiempo de respuesta',
-                'Precio negociado',
+                { text: 'Sucursales ilimitadas' },
+                { text: 'Usuarios negociados' },
+                { text: 'Todo el plan Pro' },
+                { text: 'Reportería ejecutiva' },
+                { text: 'Integración con sistemas existentes' },
+                { text: 'SLA garantizado' },
+                { text: 'Onboarding dedicado' },
+                { text: 'Facturación personalizada' },
               ]}
-              ctaLabel="Contactar ventas"
-              ctaHref="#contacto"
-              ctaVariant="dark"
+              ctaLabel="Hablar con ventas"
+              ctaHref="mailto:contacto@cliniaapp.com?subject=Consulta%20Plan%20Enterprise%20—%20ClinicaApp&body=Hola%2C%20me%20interesa%20el%20Plan%20Enterprise.%0A%0ANombre%3A%20%0AClínica%3A%20%0ATeléfono%3A%20"
+              ctaVariant="outline-neutral"
             />
           </div>
+          <p className="text-center text-[12px] text-[#5a8ab0] mt-8 max-w-[700px] mx-auto">
+            * Facturación electrónica FEL sujeta a integración con certificador autorizado. La clínica debe contar con contrato vigente con un certificador habilitado por SAT, o entidad regulatoria de su país.
+          </p>
         </div>
       </section>
 

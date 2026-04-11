@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { templateContactoLanding } from '@/lib/email-templates'
 
 export async function POST(req: NextRequest) {
   try {
-    const { nombre, clinica, email, plan, mensaje } = await req.json()
+    const { nombre, clinica, pais, email, plan, mensaje } = await req.json()
 
     if (!nombre || !email || !plan) {
       return NextResponse.json({ error: 'Campos requeridos faltantes' }, { status: 400 })
@@ -19,15 +20,7 @@ export async function POST(req: NextRequest) {
       to: [{ email: 'contacto@cliniaapp.com', name: 'ClinicaApp' }],
       replyTo: { email, name: nombre },
       subject: `Nuevo contacto desde ClinicaApp - ${plan}`,
-      htmlContent: `
-        <h2>Nuevo contacto desde la landing page</h2>
-        <p><strong>Nombre:</strong> ${nombre}</p>
-        <p><strong>Clínica:</strong> ${clinica || 'No indicada'}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Plan de interés:</strong> ${plan}</p>
-        <p><strong>Mensaje:</strong></p>
-        <p>${mensaje || 'Sin mensaje adicional'}</p>
-      `,
+      htmlContent: templateContactoLanding({ nombre, clinica, pais, email, plan, mensaje }),
     }
 
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {

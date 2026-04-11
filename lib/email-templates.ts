@@ -1,3 +1,34 @@
+// ─── Template Contacto Landing ──────────────────────────────────────────────
+
+interface DatosContactoLanding {
+  nombre: string
+  clinica?: string
+  pais?: string
+  email: string
+  plan: string
+  mensaje?: string
+}
+
+export function templateContactoLanding({
+  nombre,
+  clinica,
+  pais,
+  email,
+  plan,
+  mensaje,
+}: DatosContactoLanding): string {
+  return `
+    <h2>Nuevo contacto desde la landing page</h2>
+    <p><strong>Nombre:</strong> ${nombre}</p>
+    <p><strong>Clínica:</strong> ${clinica || 'No indicada'}</p>
+    <p><strong>País:</strong> ${pais || 'No indicado'}</p>
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Plan de interés:</strong> ${plan}</p>
+    <p><strong>Mensaje:</strong></p>
+    <p>${mensaje || 'Sin mensaje adicional'}</p>
+  `
+}
+
 // ─── Utilidades internas ────────────────────────────────────────────────────
 
 function layoutBase(clinica: string, contenido: string): string {
